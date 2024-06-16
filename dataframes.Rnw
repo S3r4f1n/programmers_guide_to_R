@@ -1,0 +1,56 @@
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{Dataframes}
+\vspace*{.2cm}
+}]
+\label{sec:dataframes}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+Dataframes are probably the most used data type in R, and this is where the `dplyr` package becomes invaluable. Under the hood, dataframes are lists of lists (and vectors) with some additional constraints (e.g., all contained lists must have the same length). A tibble is a dataframe with some extra verifications and fewer automatic transformations, reducing unexpected mistakes. Additionally, it is the standard dataframe used throughout the tidyverse package.
+
+Following, we will use the made-up data of some Momo characters to demonstrate filtering, selecting, summarizing, and grouping of dataframes. First, I'll show how to do it in base R, and instead of explaining, I'll just provide the syntax using the `dplyr` package.
+
+<<echo=FALSE>>=
+suppressMessages(library(dplyr))
+@
+
+<<echo=TRUE>>=
+characters <- tibble(
+  Name = c("Momo", "Beppo", "Gigi"),
+  Age = c(12, 52, 27),
+  Skill = c("Listening", "Steady Pace",
+  "Storytelling"),
+  Height = c(120, 180, 150),
+)
+characters
+
+# filter and select -------------------
+tmp <- characters[ # base R
+    characters$Age < 50,
+    c("Name", "Skill")]
+tmp[order(tmp$Name),]
+@ 
+<<echo=TRUE>>=
+characters %>% # dplyr
+  filter(Age < 50) %>%
+  select(Name, Skill) %>%
+  arrange(Name)
+# grouping and summarizing ------------
+tapply(# base R
+  characters$Height,
+  cut(characters$Age, c(0, 50, 100)),
+  mean
+)
+characters %>% # dplyr
+  group_by(age_cat = 
+    cut(Age, c(0,50,100))) %>%
+  summarise(avg_height = mean(Height))
+@
+
+\section*{Conclusion}
+Base R can do most of the things `dplyr` can, but `dplyr` syntax seems to explain itself. Moreover, the syntax facilitates thinking of more complex transformations. Imagine having data from different weather stations, and you want the newest measurement of each station. How would you do it in base R? With `dplyr`, you'll group by stations, arrange by date, and slice to yield the first element of each group. (Cheat Sheets: \href{https://rstudio.github.io/cheatsheets/data-transformation.pdf}{dplyr} and check \href{https://rstudio.github.io/cheatsheets/tidyr.pdf}{tidyr} for pivot longer/wider)

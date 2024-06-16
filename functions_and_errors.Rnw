@@ -1,0 +1,119 @@
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{Functions and Methods}
+\vspace*{.2cm}
+}]
+\label{sec:functions}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+R, being a functional programming language, handles functions as objects and can even process them into lists and vice versa. While the usage of functions as objects is very useful, the conversion to lists is a legacy feature that can be happily ignored. Functions are one of the main ways to build and maintain larger coding projects. Usually, the most common functions already exist in Base R, and almost everything one would want is available in a package, reducing the need to write your own functions. Reusing functions can reduce bugs simply by using code that has already been tested by potentially hundreds of other people. Even if you build your own functions, they'll be tested by you, and after testing, you'll know they work. But imagine rewriting the code over and over again. The potential for a typo, misremembering a function name, or assigning a wrong variable is always there. Furthermore, well-designed functions make the code readable such that it no longer takes a lot of brain power to understand what is happening, even if the underlying procedure is very complex. Enough of the ramble about the benefits of clean code.
+
+\section*{Functions}
+Good error messages are invaluable. They save potentially hours of debugging. I like to use assertions at the beginning of functions to verify whether the input is acceptable. This helps to catch errors as early as possible, and additionally, you can add messages that help to understand what should be different. For the sake of this section, we will write our own assertion function (similar to `stopifnot()`).
+
+<<echo=TRUE>>=
+assert <- function(condition, message){
+  if(exists("assert_off")&&assert_off)
+    return("assertions off")
+  if (!condition) {
+    stop(message, call. = FALSE)
+  }}
+@
+<<echo=TRUE>>=
+assert(FALSE, "something failed")
+
+assert_off <- TRUE
+assert(FALSE, "something failed")
+rm(assert_off)
+@
+
+Here a lot is happening. First, we define the function `assert`, taking a condition and a message. The condition has to evaluate to true in order to pass the assertion. If not, the message is thrown. Additionally, we have a flag `assert\_off` which can be set to true to disable all assertions. This works because R looks for the variable `assert\_off` in the local environment of the function, but since it can't find it there, R goes up an environment until it finds the variable or the global scope is reached. If it can't find the variable, it would throw an error. Since we don't want that to happen, we check whether the variable `assert\_off` exists. If it doesn't exist, we assume assertions should be turned on. In practice, I would remove the flag, but it's a nice way to discuss environments. Here is how we can apply the `assert` function.
+
+<<echo=2:10>>=
+suppressMessages(library(jsonlite))
+# fromJSON has a nasty error message
+
+readJSON <- function(path) {
+  assert(
+    file.exists(path),
+    paste0("can't find \"", path,"\""))
+  fromJSON(path)
+}
+
+readJSON("some_file.json")
+@
+
+\section*{Methods}
+In addition to functions, R has generics (methods) that have different implementations depending on the class of the first argument provided. Every R object has a class attribute (a vector of strings). You can manually modify the class attribute, potentially breaking the behavior of some functions. Classes provide the backbone for various operations, such as correctly handling additions for both normal and complex numbers, and even for adding visual elements when building a ggplot. Let's build our own class and generics.
+
+<<echo=TRUE>>=
+worker <- 4
+class(worker)
+class(worker) <- "proletariat"
+class(worker)
+mean(worker)
+mean.proletariat <- function(x)
+  "doesn't work"
+mean(worker)
+"+.proletariat" <- function(a, b) {
+  if (sum(a, b) >= 10) "protest" else
+    sum(a, b) * 0.75
+}
+worker + worker
+worker + worker + worker
+
+future <- function(x) 
+  UseMethod("future")
+future.proletariat <- function(x) 
+  "irrelevant"
+@
+<<echo=TRUE>>=
+future(worker)
+future(4)
+@
+
+Here, we first create a variable `worker` which is a numeric vector (4). Then we assign the class `proletariat` to the worker to define its class. We see `worker` is now aware of its class. However, since we did not implement any methods for this class, it still behaves like a number. Next, we show how a worker should behave when we calculate the mean. We do this by adding the method `mean.proletariat`. Now, whenever `mean` is called on an object with the class `proletariat`, the string "doesn't work" is returned. Yay, the worker has learned: `mean(worker)` doesn't work. We can even change the behavior of the `+` function. Notice we have to use `""` since `+` is a special symbol. This way, we can teach the proletariat what to do when multiple of them meet up --- protest. For now, we added methods for already existing functions. If we want to create a new function that acts as a method, we use the `UseMethod` function. This way, we create the function `future` and define its behavior for the proletariat. Now we can also check what the future of a worker is: irrelevance. Since no default method is implemented for `future` (`future.default <- ...`), the call to `future(4)` throws an error.
+
+\section*{Conclusions}
+We have learned how to throw errors and how environments resolve variables. Additionally, we explored class-specific functionalities and adapting basic functions like addition. These are valuable tools for creating more complex code. For further reading, refer to the \href{https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Definition}{R Language Definition}.
+%---------------------------------------------------------------------------------------------------------------
+
+% \section*{Methods}
+% Besides functions, there are methods. Methods are also functions, but they may behave differently on different input types. This is heavily inspired by object-oriented programming. Every R object has a class attribute. If a method is called, the class attribute determines which version of the method is used. You can assign the class attribute manually. While doing so, no checks are applied. This can lead to unexpected bad things happening. But classes can be handy when creating your own objects and types which should have a special way of printing or calculating a mean. Let's see how to implement classes and methods.
+
+% <<echo=TRUE>>=
+% worker <- 4
+% class(worker)
+% class(worker) <- "proletariat"
+% class(worker)
+% mean(worker)
+% mean.proletariat <- function(x)
+%   "doesn't work"
+% mean(worker)
+% "+.proletariat" <- function(a,b){
+%   if (sum(a,b) >= 10) "protest" else
+%     sum(a,b)*0.75
+% }
+% worker + worker
+% worker + worker + worker
+
+% future <- function(x) 
+%         UseMethod("future")
+% future.proletariat <- function(x) 
+%   "irrelevant"
+
+% future(worker)
+% future(4)
+% @
+
+% Here we first create a variable `worker` which is a numeric vector (4). Then we assign the class `proletariat` to the worker so he knows where he belongs. We see `worker` is now aware of his class. But since we did not implement any methods for this class, he still behaves like a number. Further, we show how a worker should behave when he is mean. We do this by adding the method `mean.proletariat`. Now, whenever `mean` is called on an object with class `proletariat`, the string "doesn't work" is returned. Yay, the worker learned. A `mean(worker)` doesn't work. We can even change the behavior of the `+` function. Notice we have to use `""` since `+` is a special symbol. So we can even teach the proletariat what to do when multiple of them meet up --- protest. For now, we added methods for already existing functions. If we want to create a new function that acts as a method, we use the `UseMethod` function. This way, we create the function `future` and define its behavior for the proletariat. Now we can also check what the future of a worker is: irrelevance. Since no default method is implemented for `future` (`future.default <- ...`), the call to `future(4)` throws an error.
+
+% So, we taught the workers how to behave if they want to be mean or what to do if they meet up. And we discovered their harsh future. And we learned how to create classes and class-specific methods.
+
+% \section*{Conclusions}
+% We have learned how to throw and catch errors. Additionally, we have seen how environments are used to resolve variables. Further, we have seen how to have class-specific functionalities and how we can even adapt basic functions like addition. These are useful building blocks when creating larger and more complicated code. (Further reading \href{https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Definition}{R Language Definition})

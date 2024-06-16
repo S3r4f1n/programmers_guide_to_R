@@ -1,0 +1,58 @@
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{Vectors and Piping}
+\vspace*{.2cm}
+}]
+\label{sec:vectors}
+
+First, we address two questions: Why doesn't a functional programming language like R have a `map()` function like Rust, Haskell, or even Java? And why is the length of "Hello World" 1?
+
+<<echo=TRUE>>=
+length("Hello World") 
+@
+
+\section*{Vectors}
+
+To answer the second question, we must understand that in R, everything is a vector. Basic types like strings, numerics, and booleans are vectors. There is no single string or boolean, only vectors of length 1 containing a string or boolean (see \href{https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Vector-objects}{R Language Definition}). Hence, the length of "Hello World" is 1 because it is a vector of size 1 containing the string "Hello World". We can get the number of characters in the string using the `nchar()` function.
+
+<<echo=TRUE>>=
+nchar("Hello World") 
+@
+
+To create a vector of several strings, we combine them with `c()`. Knowing that the "Hello World" string is a vector and that we can apply `nchar()` to it, it should be possible to apply `nchar()` to this vector as well.
+
+<<echo=TRUE>>=
+length(c("The","words","are")) 
+nchar(c("The","words","are")) 
+@
+
+As expected, the length of the vector is 3, and the result of `nchar()` is a vector of numerics containing the number of characters for each string.
+
+\section*{Piping}
+
+Applying several functions in sequence can be cumbersome with base R syntax.
+
+<<echo=TRUE>>=
+abs(nchar(c("The","words","are")) - 10)
+@
+
+We can use the pipe operator from the `magrittr` package, which is also loaded when using the `dplyr` package, to make this more readable:
+
+<<echo=2:6>>=
+suppressMessages(library(dplyr)) # load 'pipe' %>% 
+# library(dplyr)
+c("The","words","are") %>%
+    nchar(.) %>%
+    {. - 10} %>%
+    abs(.)
+@
+
+Even though the code is longer, the order in which the functions and operations are applied is easier to understand. Notice how the syntax looks similar to `c(...).map(nchar).map(...)`. This is because `nchar`, `-`, and `abs` are vectorized. Note that you could also use `\%>\% slice()` with the pipe operator.
+
+\section*{Conclusion}
+
+Since everything in R is a vector, all basic functions are vectorized and work on vectors, making a `map()` function in most cases unnecessary. Additionally, the pipe operator makes the code resemble the syntax of functional programming languages that use `map()` and makes it easier to understand the order of applied functions. If you feel that the base R options don't resemble the iterator options of typical functional programming languages enough, have a look at the \href{https://rstudio.github.io/cheatsheets/purrr.pdf}{`purrr`} package.

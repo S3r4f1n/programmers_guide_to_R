@@ -1,0 +1,59 @@
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{R Package and Rust}
+\vspace*{.2cm}
+}]
+\label{sec:packages}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+A rule of thumb in programming is that if you want to do something, someone else has probably already done it better and documented it well. R does not natively support Rust, but it is fairly easy to build and run R packages with Rust code, or even build Rust functions in R and then run them in the R environment.
+
+\section*{Rust from Within}
+The `extendr` crate for Rust and the `rextendr` package make it easy to run Rust code from within R. Check the \href{https://extendr.github.io/rextendr/}{rextendr} documentation for installation and further examples. After installing all dependencies, mainly Rust, R, and the `rextendr` package, you can run the following lines:
+<<echo=TRUE, cache=TRUE>>=
+suppressMessages(
+rextendr::rust_function("
+fn add_from_rust(a:f64, b:f64) -> f64 {
+    a + b
+}"))
+
+add_from_rust(1.2, 1.7)
+@
+
+This is neat but not ideal, since calling `rust\_function()` compiles the provided Rust string. This takes a lot of time, and debugging the Rust code this way is not ideal. By building our own package, we can avoid this. Compiling and debugging will take place in a proper development environment.
+
+\section*{Packages}
+Luckily, creating your own R package is supported by an amazing toolset. No wonder so many well-crafted packages exist. Check out the \href{https://extendr.github.io/rextendr/articles/package.html}{extendr} and \href{https://rstudio.github.io/cheatsheets/html/package-development.html}{devtools} documentation for detailed information. 
+
+After installing `devtools` and `rextendr`, these commands will initialize an R package using Rust:
+<<eval=FALSE>>=
+require(devtools)
+create_package("path")
+# Change directory to the package
+use_readme_rmd() # Creating Rmd
+rextendr::use_extendr() # Init
+rextendr::document() # Update
+@
+The \href{https://rstudio.github.io/cheatsheets/package-development.pdf}{devtools cheat sheet} is an excellent summary of how to create and publish a package to GitHub. From here on, everything should be smooth sailing.
+
+I used the commands above to initialize my own package. Initially, it did not immediately work, but after running many commands in the devtools cheat sheet and restarting my R sessions, the following commands worked:
+<<eval=FALSE>>=
+load_all()
+check()
+rextendr::document() # Update
+# Push to GitHub
+@
+
+I have published my package on GitHub. Take a look at it \href{https://github.com/S3r4f1n/rpackageUsingRust}{here}. You can install the package directly from GitHub with:
+<<echo=TRUE,cache=TRUE>>=
+# devtools::install_github(
+#    "S3r4f1n/rpackageUsingRust")
+suppressMessages(library(
+    rpackageUsingRust))
+greeting_n_times(2)
+@
+
+\section*{Conclusion}
+Building an R package is not trivial, but the tooling (devtools) is quite easy to use and well documented. With the `extendr` crate and `rextendr` package, the interoperability between Rust and R is well supported, enabling the use of Rust as a backend for R packages. If you want to create your own R package using Rust, check the dedicated articles on \href{https://extendr.github.io/rextendr/articles/package.html}{extendr} and \href{https://rstudio.github.io/cheatsheets/html/package-development.html}{devtools}.

@@ -1,0 +1,17 @@
+\section*{Introduction}
+
+The programming language R can be both surprisingly convenient and irritating. This guide will highlight some of R's unconventional behavior and explain it. Additionally, I'll cover basic concepts from other programming languages and either show how to do it in Base R or reference a package that covers it.
+
+R is a rather old language first released in 2000 and built upon the even older language S, both primarily used in academic contexts (see \href{https://www.stat.auckland.ac.nz/~ihaka/downloads/Otago.pdf}{History of R}). This means Base R is old, and many of beloved concepts don't exist in plain R or behave in unexpected ways. But don't worry, you don't need to relearn everything or miss out on these more modern functionalities. R comes with an ecosystem of well-crafted packages. Especially the "tidyverse" package --- a collection of several smaller packages --- fills the gaps between Base R and modern programming languages. These packages consolidate recent developments in design of programming languages into neat wrappers and functions. Seriously, if you don't use R with the appropriate packages, you're just using legacy code (see \href{https://rstudio.github.io/cheatsheets/R-best-practice.pdf}{Best Practices for R}).
+
+This guide won't cover the R basics. I'll assume you know how to install packages and use them, or at least you know how to figure it out yourself. I'll try to build a solid fundamental understanding of R that one would not easily find by googling or using other search engines. Certainly, you can get an even better understanding by reading documentations. In contrast to the documentations, I'll provide you with an opinionated and concise selection of fundamentals.
+
+\section*{Outline}
+\begin{enumerate}[label = \Roman*.]
+    \item \hyperref[sec:vectors]{Vectors and Piping:} In this section, we explore why R, a functional programming language, lacks a map() function similar to Rust, Haskell, or Java, and why the length of "Hello World" is 1. We then demonstrate how the pipe operator in R can simplify function application and enhance code readability.
+    \item \hyperref[sec:lists]{Subsetting and Indexing:} Here we explore why accessing elements of a vector and a list are the same, although they look different on the surface. In the same go will look at accessing values by names and how to use "dictionaries" in R.
+    \item \hyperref[sec:dataframes]{Dataframes:} We'll explore the use of dataframes in R and the advantages of using the dplyr package for data manipulation. By comparing base R and dplyr syntax, we demonstrate how dplyr simplifies and enhances data operations.
+    \item \hyperref[sec:functions]{Functions and Methods:} In this section, we explore the versatility of functions as objects, the utility of assertions for error handling within functions, and the implementation of class-specific methods using R's object-oriented features.
+    \item \hyperref[sec:packages]{R Package and Rust:} We'll have a look at creating R packages with a Rust backend. Rust integration is streamlined with rextendr. We'll use devtools to create and publish a package.
+\end{enumerate}
+Some resources: \href{https://posit.co/resources/cheatsheets/}{CheatSheet collection}, \href{https://github.com/rstudio/cheatsheets/}{the same on GitHub} and \href{https://cran.r-project.org/doc/manuals/r-release/R-lang.html}{R Language Definition}.

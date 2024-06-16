@@ -1,0 +1,34 @@
+\documentclass[twoside,twocolumn]{article}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{Layout} %Layout and style
+
+
+\title{ A Programmer's Guide to R}
+\author{ Serafin Schoch }
+\begin{document}
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+% \twocolumn[{%
+% \centering
+% \LARGE R guide for Programmers
+% \vspace*{.4cm}
+% }] 
+\maketitle
+\thispagestyle{empty}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+\input{intro.sty}
+
+<<child="vectors_and_piping.Rnw">>=
+@
+<<child="lists_and_indexing.Rnw">>=
+@
+<<child="dataframes.Rnw">>=
+@
+<<child="functions_and_errors.Rnw">>=
+@
+<<child="package_and_rust.Rnw">>=
+@
+\end{document}

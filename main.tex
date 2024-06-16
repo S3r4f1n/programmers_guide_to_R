@@ -1,0 +1,643 @@
+\documentclass[twoside,twocolumn]{article}\usepackage[]{graphicx}\usepackage[dvipsnames]{xcolor}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{Layout} %Layout and style
+
+
+\title{ A Programmer's Guide to R}
+\author{ Serafin Schoch }
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+% \twocolumn[{%
+% \centering
+% \LARGE R guide for Programmers
+% \vspace*{.4cm}
+% }] 
+\maketitle
+\thispagestyle{empty}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+\input{intro.sty}
+
+
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{Vectors and Piping}
+\vspace*{.2cm}
+}]
+\label{sec:vectors}
+
+First, we address two questions: Why doesn't a functional programming language like R have a `map()` function like Rust, Haskell, or even Java? And why is the length of "Hello World" 1?
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{length}\hlstd{(}\hlstr{"Hello World"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section*{Vectors}
+
+To answer the second question, we must understand that in R, everything is a vector. Basic types like strings, numerics, and booleans are vectors. There is no single string or boolean, only vectors of length 1 containing a string or boolean (see \href{https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Vector-objects}{R Language Definition}). Hence, the length of "Hello World" is 1 because it is a vector of size 1 containing the string "Hello World". We can get the number of characters in the string using the `nchar()` function.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{nchar}\hlstd{(}\hlstr{"Hello World"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 11
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+To create a vector of several strings, we combine them with `c()`. Knowing that the "Hello World" string is a vector and that we can apply `nchar()` to it, it should be possible to apply `nchar()` to this vector as well.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{length}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{"The"}\hlstd{,}\hlstr{"words"}\hlstd{,}\hlstr{"are"}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## [1] 3
+\end{verbatim}
+\begin{alltt}
+\hlkwd{nchar}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{"The"}\hlstd{,}\hlstr{"words"}\hlstd{,}\hlstr{"are"}\hlstd{))}
+\end{alltt}
+\begin{verbatim}
+## [1] 3 5 3
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+As expected, the length of the vector is 3, and the result of `nchar()` is a vector of numerics containing the number of characters for each string.
+
+\section*{Piping}
+
+Applying several functions in sequence can be cumbersome with base R syntax.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{abs}\hlstd{(}\hlkwd{nchar}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{"The"}\hlstd{,}\hlstr{"words"}\hlstd{,}\hlstr{"are"}\hlstd{))} \hlopt{-} \hlnum{10}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 7 5 7
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+We can use the pipe operator from the `magrittr` package, which is also loaded when using the `dplyr` package, to make this more readable:
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# library(dplyr)}
+\hlkwd{c}\hlstd{(}\hlstr{"The"}\hlstd{,}\hlstr{"words"}\hlstd{,}\hlstr{"are"}\hlstd{)} \hlopt{%>%}
+    \hlkwd{nchar}\hlstd{(.)} \hlopt{%>%}
+    \hlstd{\{.} \hlopt{-} \hlnum{10}\hlstd{\}} \hlopt{%>%}
+    \hlkwd{abs}\hlstd{(.)}
+\end{alltt}
+\begin{verbatim}
+## [1] 7 5 7
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Even though the code is longer, the order in which the functions and operations are applied is easier to understand. Notice how the syntax looks similar to `c(...).map(nchar).map(...)`. This is because `nchar`, `-`, and `abs` are vectorized. Note that you could also use `\%>\% slice()` with the pipe operator.
+
+\section*{Conclusion}
+
+Since everything in R is a vector, all basic functions are vectorized and work on vectors, making a `map()` function in most cases unnecessary. Additionally, the pipe operator makes the code resemble the syntax of functional programming languages that use `map()` and makes it easier to understand the order of applied functions. If you feel that the base R options don't resemble the iterator options of typical functional programming languages enough, have a look at the \href{https://rstudio.github.io/cheatsheets/purrr.pdf}{`purrr`} package.
+
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{Slicing and Names}
+\vspace*{.2cm}
+}]
+\label{sec:lists}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+Some of the most commonly used data structures are dictionaries and lists, but R doesn't have a dictionary type. Furthermore, lists in R behave peculiarly: Why does calling `some\_list[1]` return the first element wrapped in a list, while `some\_vec[1]` returns just the first element?
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{some_vec} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"A"}\hlstd{,}\hlstr{"B"}\hlstd{,}\hlstr{"C"}\hlstd{)}
+\hlkwd{identical}\hlstd{(}\hlstr{"A"}\hlstd{, some_vec[}\hlnum{1}\hlstd{])}
+\end{alltt}
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+\begin{alltt}
+\hlstd{some_list} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlstr{"A"}\hlstd{,}\hlstr{"B"}\hlstd{,}\hlstr{"C"}\hlstd{)}
+\hlkwd{identical}\hlstd{(}\hlstr{"A"}\hlstd{, some_list[}\hlnum{1}\hlstd{])}
+\end{alltt}
+\begin{verbatim}
+## [1] FALSE
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section*{Slicing}
+To jump straight to the answer, the `[]` brackets are used for slicing. The question might be misleading since slicing a vector also returns a slice and not an element. However, all basic types in R are vectors. In that sense, the sliced vector containing only one string is as close as we get to a single string, meaning that "A" and `some\_vec[1]` are essentially the same. This does not hold for lists.
+
+We can access the elements of a list with the `[[]]` brackets. We can also use this on vectors, but we'll receive just the same as we do by slicing.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{some_list} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlstr{"A"}\hlstd{,}\hlstr{"B"}\hlstd{,}\hlstr{"C"}\hlstd{)}
+\hlkwd{identical}\hlstd{(}\hlstr{"A"}\hlstd{, some_list[[}\hlnum{1}\hlstd{]])}
+\end{alltt}
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Slicing is quite versatile in R. Chapter 2.7 from the \href{https://rstudio.github.io/r-manuals/r-intro/Simple-manipulations-numbers-and-vectors.html#index-vectors-selecting-and-modifying-subsets-of-a-data-set}{\textit{R-intro}} provides good insights into all possibilities of slicing. We can use it to retrieve a selected part of a vector/list or to update the selected values of a vector/list. Here are some examples in code:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{vec} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"A"}\hlstd{,}\hlstr{"B"}\hlstd{,}\hlstr{"C"}\hlstd{)}
+\hlstd{vec[}\hlkwd{c}\hlstd{(}\hlnum{TRUE}\hlstd{,} \hlnum{FALSE}\hlstd{,} \hlnum{TRUE}\hlstd{)]} \hlcom{# "A", "C"}
+\hlstd{vec[}\hlstr{"B"} \hlopt{==} \hlstd{vec]} \hlcom{# returns "B"}
+\hlstd{vec[}\hlopt{-}\hlnum{2}\hlstd{]} \hlcom{# returns "A", "C"}
+\hlstd{vec[}\hlnum{2}\hlopt{:}\hlnum{3}\hlstd{]} \hlkwb{<-} \hlstr{"X"} \hlcom{# vec = "A", "X", "X"}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+\section*{Dictionaries}
+There is no dictionary type since every vector or list can have named entries. These names can be given on creation or later by assigning the attribute names. Names can be used to slice and access elements of vectors/lists.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{vec} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlnum{1}\hlopt{:}\hlnum{3}\hlstd{)} \hlcom{# assign later}
+\hlkwd{names}\hlstd{(vec)} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlstr{"A"}\hlstd{,}\hlstr{"B"}\hlstd{,}\hlstr{"C"}\hlstd{)}
+\hlkwd{c}\hlstd{(}\hlkwc{A}\hlstd{=}\hlnum{1}\hlstd{,}\hlkwc{B}\hlstd{=}\hlnum{2}\hlstd{,}\hlkwc{C}\hlstd{=}\hlnum{3}\hlstd{)} \hlcom{# assign on creation}
+\end{alltt}
+\begin{verbatim}
+## A B C 
+## 1 2 3
+\end{verbatim}
+\begin{alltt}
+\hlstd{vec[}\hlstr{"B"}\hlstd{]}
+\end{alltt}
+\begin{verbatim}
+## B 
+## 2
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Lists additionally provide the `\$name` dollar syntax, which does the same as `[["name"]]`.
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{list} \hlkwb{<-} \hlkwd{list}\hlstd{(}\hlkwc{A}\hlstd{=}\hlnum{1}\hlstd{,} \hlkwc{B}\hlstd{=}\hlnum{2}\hlstd{,} \hlkwc{C}\hlstd{=}\hlnum{3}\hlstd{)}
+\hlkwd{identical}\hlstd{(list[[}\hlstr{"A"}\hlstd{]], list}\hlopt{$}\hlstd{A)}
+\end{alltt}
+\begin{verbatim}
+## [1] TRUE
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section*{Conclusion}
+There is no separate dictionary type since vectors and lists can be turned into dictionaries by naming them. The `\$` dollar syntax is handy to access values of named lists. Furthermore, the `[]` brackets are used to slice and not to retrieve an element. Confusion can occur when using it on vectors since, in that case, a slice of size 1 is really the same as the element itself.
+
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{Dataframes}
+\vspace*{.2cm}
+}]
+\label{sec:dataframes}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+Dataframes are probably the most used data type in R, and this is where the `dplyr` package becomes invaluable. Under the hood, dataframes are lists of lists (and vectors) with some additional constraints (e.g., all contained lists must have the same length). A tibble is a dataframe with some extra verifications and fewer automatic transformations, reducing unexpected mistakes. Additionally, it is the standard dataframe used throughout the tidyverse package.
+
+Following, we will use the made-up data of some Momo characters to demonstrate filtering, selecting, summarizing, and grouping of dataframes. First, I'll show how to do it in base R, and instead of explaining, I'll just provide the syntax using the `dplyr` package.
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{characters} \hlkwb{<-} \hlkwd{tibble}\hlstd{(}
+  \hlkwc{Name} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"Momo"}\hlstd{,} \hlstr{"Beppo"}\hlstd{,} \hlstr{"Gigi"}\hlstd{),}
+  \hlkwc{Age} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{12}\hlstd{,} \hlnum{52}\hlstd{,} \hlnum{27}\hlstd{),}
+  \hlkwc{Skill} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"Listening"}\hlstd{,} \hlstr{"Steady Pace"}\hlstd{,}
+  \hlstr{"Storytelling"}\hlstd{),}
+  \hlkwc{Height} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{120}\hlstd{,} \hlnum{180}\hlstd{,} \hlnum{150}\hlstd{),}
+\hlstd{)}
+\hlstd{characters}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 3 x 4
+##   Name    Age Skill        Height
+##   <chr> <dbl> <chr>         <dbl>
+## 1 Momo     12 Listening       120
+## 2 Beppo    52 Steady Pace     180
+## 3 Gigi     27 Storytelling    150
+\end{verbatim}
+\begin{alltt}
+\hlcom{# filter and select -------------------}
+\hlstd{tmp} \hlkwb{<-} \hlstd{characters[} \hlcom{# base R}
+    \hlstd{characters}\hlopt{$}\hlstd{Age} \hlopt{<} \hlnum{50}\hlstd{,}
+    \hlkwd{c}\hlstd{(}\hlstr{"Name"}\hlstd{,} \hlstr{"Skill"}\hlstd{)]}
+\hlstd{tmp[}\hlkwd{order}\hlstd{(tmp}\hlopt{$}\hlstd{Name),]}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 2 x 2
+##   Name  Skill       
+##   <chr> <chr>       
+## 1 Gigi  Storytelling
+## 2 Momo  Listening
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{characters} \hlopt{%>%} \hlcom{# dplyr}
+  \hlkwd{filter}\hlstd{(Age} \hlopt{<} \hlnum{50}\hlstd{)} \hlopt{%>%}
+  \hlkwd{select}\hlstd{(Name, Skill)} \hlopt{%>%}
+  \hlkwd{arrange}\hlstd{(Name)}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 2 x 2
+##   Name  Skill       
+##   <chr> <chr>       
+## 1 Gigi  Storytelling
+## 2 Momo  Listening
+\end{verbatim}
+\begin{alltt}
+\hlcom{# grouping and summarizing ------------}
+\hlkwd{tapply}\hlstd{(}\hlcom{# base R}
+  \hlstd{characters}\hlopt{$}\hlstd{Height,}
+  \hlkwd{cut}\hlstd{(characters}\hlopt{$}\hlstd{Age,} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{50}\hlstd{,} \hlnum{100}\hlstd{)),}
+  \hlstd{mean}
+\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+##   (0,50] (50,100] 
+##      135      180
+\end{verbatim}
+\begin{alltt}
+\hlstd{characters} \hlopt{%>%} \hlcom{# dplyr}
+  \hlkwd{group_by}\hlstd{(}\hlkwc{age_cat} \hlstd{=}
+    \hlkwd{cut}\hlstd{(Age,} \hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,}\hlnum{50}\hlstd{,}\hlnum{100}\hlstd{)))} \hlopt{%>%}
+  \hlkwd{summarise}\hlstd{(}\hlkwc{avg_height} \hlstd{=} \hlkwd{mean}\hlstd{(Height))}
+\end{alltt}
+\begin{verbatim}
+## # A tibble: 2 x 2
+##   age_cat  avg_height
+##   <fct>         <dbl>
+## 1 (0,50]          135
+## 2 (50,100]        180
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section*{Conclusion}
+Base R can do most of the things `dplyr` can, but `dplyr` syntax seems to explain itself. Moreover, the syntax facilitates thinking of more complex transformations. Imagine having data from different weather stations, and you want the newest measurement of each station. How would you do it in base R? With `dplyr`, you'll group by stations, arrange by date, and slice to yield the first element of each group. (Cheat Sheets: \href{https://rstudio.github.io/cheatsheets/data-transformation.pdf}{dplyr} and check \href{https://rstudio.github.io/cheatsheets/tidyr.pdf}{tidyr} for pivot longer/wider)
+
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{Functions and Methods}
+\vspace*{.2cm}
+}]
+\label{sec:functions}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+R, being a functional programming language, handles functions as objects and can even process them into lists and vice versa. While the usage of functions as objects is very useful, the conversion to lists is a legacy feature that can be happily ignored. Functions are one of the main ways to build and maintain larger coding projects. Usually, the most common functions already exist in Base R, and almost everything one would want is available in a package, reducing the need to write your own functions. Reusing functions can reduce bugs simply by using code that has already been tested by potentially hundreds of other people. Even if you build your own functions, they'll be tested by you, and after testing, you'll know they work. But imagine rewriting the code over and over again. The potential for a typo, misremembering a function name, or assigning a wrong variable is always there. Furthermore, well-designed functions make the code readable such that it no longer takes a lot of brain power to understand what is happening, even if the underlying procedure is very complex. Enough of the ramble about the benefits of clean code.
+
+\section*{Functions}
+Good error messages are invaluable. They save potentially hours of debugging. I like to use assertions at the beginning of functions to verify whether the input is acceptable. This helps to catch errors as early as possible, and additionally, you can add messages that help to understand what should be different. For the sake of this section, we will write our own assertion function (similar to `stopifnot()`).
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{assert} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{condition}\hlstd{,} \hlkwc{message}\hlstd{)\{}
+  \hlkwa{if}\hlstd{(}\hlkwd{exists}\hlstd{(}\hlstr{"assert_off"}\hlstd{)}\hlopt{&&}\hlstd{assert_off)}
+    \hlkwd{return}\hlstd{(}\hlstr{"assertions off"}\hlstd{)}
+  \hlkwa{if} \hlstd{(}\hlopt{!}\hlstd{condition) \{}
+    \hlkwd{stop}\hlstd{(message,} \hlkwc{call.} \hlstd{=} \hlnum{FALSE}\hlstd{)}
+  \hlstd{\}\}}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{assert}\hlstd{(}\hlnum{FALSE}\hlstd{,} \hlstr{"something failed"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: something failed}}\begin{alltt}
+\hlstd{assert_off} \hlkwb{<-} \hlnum{TRUE}
+\hlkwd{assert}\hlstd{(}\hlnum{FALSE}\hlstd{,} \hlstr{"something failed"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "assertions off"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{rm}\hlstd{(assert_off)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+Here a lot is happening. First, we define the function `assert`, taking a condition and a message. The condition has to evaluate to true in order to pass the assertion. If not, the message is thrown. Additionally, we have a flag `assert\_off` which can be set to true to disable all assertions. This works because R looks for the variable `assert\_off` in the local environment of the function, but since it can't find it there, R goes up an environment until it finds the variable or the global scope is reached. If it can't find the variable, it would throw an error. Since we don't want that to happen, we check whether the variable `assert\_off` exists. If it doesn't exist, we assume assertions should be turned on. In practice, I would remove the flag, but it's a nice way to discuss environments. Here is how we can apply the `assert` function.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# fromJSON has a nasty error message}
+
+\hlstd{readJSON} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{path}\hlstd{) \{}
+  \hlkwd{assert}\hlstd{(}
+    \hlkwd{file.exists}\hlstd{(path),}
+    \hlkwd{paste0}\hlstd{(}\hlstr{"can't find \textbackslash{}""}\hlstd{, path,}\hlstr{"\textbackslash{}""}\hlstd{))}
+  \hlkwd{fromJSON}\hlstd{(path)}
+\hlstd{\}}
+
+\hlkwd{readJSON}\hlstd{(}\hlstr{"some_file.json"}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error: can't find "{}some\_file.json"{}}}\end{kframe}
+\end{knitrout}
+
+\section*{Methods}
+In addition to functions, R has generics (methods) that have different implementations depending on the class of the first argument provided. Every R object has a class attribute (a vector of strings). You can manually modify the class attribute, potentially breaking the behavior of some functions. Classes provide the backbone for various operations, such as correctly handling additions for both normal and complex numbers, and even for adding visual elements when building a ggplot. Let's build our own class and generics.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{worker} \hlkwb{<-} \hlnum{4}
+\hlkwd{class}\hlstd{(worker)}
+\end{alltt}
+\begin{verbatim}
+## [1] "numeric"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{class}\hlstd{(worker)} \hlkwb{<-} \hlstr{"proletariat"}
+\hlkwd{class}\hlstd{(worker)}
+\end{alltt}
+\begin{verbatim}
+## [1] "proletariat"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{mean}\hlstd{(worker)}
+\end{alltt}
+\begin{verbatim}
+## [1] 4
+\end{verbatim}
+\begin{alltt}
+\hlstd{mean.proletariat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)}
+  \hlstr{"doesn't work"}
+\hlkwd{mean}\hlstd{(worker)}
+\end{alltt}
+\begin{verbatim}
+## [1] "doesn't work"
+\end{verbatim}
+\begin{alltt}
+\hlstr{"+.proletariat"} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{a}\hlstd{,} \hlkwc{b}\hlstd{) \{}
+  \hlkwa{if} \hlstd{(}\hlkwd{sum}\hlstd{(a, b)} \hlopt{>=} \hlnum{10}\hlstd{)} \hlstr{"protest"} \hlkwa{else}
+    \hlkwd{sum}\hlstd{(a, b)} \hlopt{*} \hlnum{0.75}
+\hlstd{\}}
+\hlstd{worker} \hlopt{+} \hlstd{worker}
+\end{alltt}
+\begin{verbatim}
+## [1] 6
+\end{verbatim}
+\begin{alltt}
+\hlstd{worker} \hlopt{+} \hlstd{worker} \hlopt{+} \hlstd{worker}
+\end{alltt}
+\begin{verbatim}
+## [1] "protest"
+\end{verbatim}
+\begin{alltt}
+\hlstd{future} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)}
+  \hlkwd{UseMethod}\hlstd{(}\hlstr{"future"}\hlstd{)}
+\hlstd{future.proletariat} \hlkwb{<-} \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)}
+  \hlstr{"irrelevant"}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{future}\hlstd{(worker)}
+\end{alltt}
+\begin{verbatim}
+## [1] "irrelevant"
+\end{verbatim}
+\begin{alltt}
+\hlkwd{future}\hlstd{(}\hlnum{4}\hlstd{)}
+\end{alltt}
+
+
+{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in UseMethod("{}future"{}): nicht anwendbare Methode für 'future' auf Objekt der Klasse "{}c('double', 'numeric')"{} angewendet}}\end{kframe}
+\end{knitrout}
+
+Here, we first create a variable `worker` which is a numeric vector (4). Then we assign the class `proletariat` to the worker to define its class. We see `worker` is now aware of its class. However, since we did not implement any methods for this class, it still behaves like a number. Next, we show how a worker should behave when we calculate the mean. We do this by adding the method `mean.proletariat`. Now, whenever `mean` is called on an object with the class `proletariat`, the string "doesn't work" is returned. Yay, the worker has learned: `mean(worker)` doesn't work. We can even change the behavior of the `+` function. Notice we have to use `""` since `+` is a special symbol. This way, we can teach the proletariat what to do when multiple of them meet up --- protest. For now, we added methods for already existing functions. If we want to create a new function that acts as a method, we use the `UseMethod` function. This way, we create the function `future` and define its behavior for the proletariat. Now we can also check what the future of a worker is: irrelevance. Since no default method is implemented for `future` (`future.default <- ...`), the call to `future(4)` throws an error.
+
+\section*{Conclusions}
+We have learned how to throw errors and how environments resolve variables. Additionally, we explored class-specific functionalities and adapting basic functions like addition. These are valuable tools for creating more complex code. For further reading, refer to the \href{https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Definition}{R Language Definition}.
+%---------------------------------------------------------------------------------------------------------------
+
+% \section*{Methods}
+% Besides functions, there are methods. Methods are also functions, but they may behave differently on different input types. This is heavily inspired by object-oriented programming. Every R object has a class attribute. If a method is called, the class attribute determines which version of the method is used. You can assign the class attribute manually. While doing so, no checks are applied. This can lead to unexpected bad things happening. But classes can be handy when creating your own objects and types which should have a special way of printing or calculating a mean. Let's see how to implement classes and methods.
+
+% <<echo=TRUE>>=
+% worker <- 4
+% class(worker)
+% class(worker) <- "proletariat"
+% class(worker)
+% mean(worker)
+% mean.proletariat <- function(x)
+%   "doesn't work"
+% mean(worker)
+% "+.proletariat" <- function(a,b){
+%   if (sum(a,b) >= 10) "protest" else
+%     sum(a,b)*0.75
+% }
+% worker + worker
+% worker + worker + worker
+
+% future <- function(x) 
+%         UseMethod("future")
+% future.proletariat <- function(x) 
+%   "irrelevant"
+
+% future(worker)
+% future(4)
+% @
+
+% Here we first create a variable `worker` which is a numeric vector (4). Then we assign the class `proletariat` to the worker so he knows where he belongs. We see `worker` is now aware of his class. But since we did not implement any methods for this class, he still behaves like a number. Further, we show how a worker should behave when he is mean. We do this by adding the method `mean.proletariat`. Now, whenever `mean` is called on an object with class `proletariat`, the string "doesn't work" is returned. Yay, the worker learned. A `mean(worker)` doesn't work. We can even change the behavior of the `+` function. Notice we have to use `""` since `+` is a special symbol. So we can even teach the proletariat what to do when multiple of them meet up --- protest. For now, we added methods for already existing functions. If we want to create a new function that acts as a method, we use the `UseMethod` function. This way, we create the function `future` and define its behavior for the proletariat. Now we can also check what the future of a worker is: irrelevance. Since no default method is implemented for `future` (`future.default <- ...`), the call to `future(4)` throws an error.
+
+% So, we taught the workers how to behave if they want to be mean or what to do if they meet up. And we discovered their harsh future. And we learned how to create classes and class-specific methods.
+
+% \section*{Conclusions}
+% We have learned how to throw and catch errors. Additionally, we have seen how environments are used to resolve variables. Further, we have seen how to have class-specific functionalities and how we can even adapt basic functions like addition. These are useful building blocks when creating larger and more complicated code. (Further reading \href{https://cran.r-project.org/doc/manuals/r-release/R-lang.html#Definition}{R Language Definition})
+
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{R Package and Rust}
+\vspace*{.2cm}
+}]
+\label{sec:packages}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+A rule of thumb in programming is that if you want to do something, someone else has probably already done it better and documented it well. R does not natively support Rust, but it is fairly easy to build and run R packages with Rust code, or even build Rust functions in R and then run them in the R environment.
+
+\section*{Rust from Within}
+The `extendr` crate for Rust and the `rextendr` package make it easy to run Rust code from within R. Check the \href{https://extendr.github.io/rextendr/}{rextendr} documentation for installation and further examples. After installing all dependencies, mainly Rust, R, and the `rextendr` package, you can run the following lines:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{suppressMessages}\hlstd{(}
+\hlstd{rextendr}\hlopt{::}\hlkwd{rust_function}\hlstd{(}\hlstr{"
+fn add_from_rust(a:f64, b:f64) -> f64 \{
+    a + b
+\}"}\hlstd{))}
+
+\hlkwd{add_from_rust}\hlstd{(}\hlnum{1.2}\hlstd{,} \hlnum{1.7}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] 2.9
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+This is neat but not ideal, since calling `rust\_function()` compiles the provided Rust string. This takes a lot of time, and debugging the Rust code this way is not ideal. By building our own package, we can avoid this. Compiling and debugging will take place in a proper development environment.
+
+\section*{Packages}
+Luckily, creating your own R package is supported by an amazing toolset. No wonder so many well-crafted packages exist. Check out the \href{https://extendr.github.io/rextendr/articles/package.html}{extendr} and \href{https://rstudio.github.io/cheatsheets/html/package-development.html}{devtools} documentation for detailed information. 
+
+After installing `devtools` and `rextendr`, these commands will initialize an R package using Rust:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{require}\hlstd{(devtools)}
+\hlkwd{create_package}\hlstd{(}\hlstr{"path"}\hlstd{)}
+\hlcom{# Change directory to the package}
+\hlkwd{use_readme_rmd}\hlstd{()} \hlcom{# Creating Rmd}
+\hlstd{rextendr}\hlopt{::}\hlkwd{use_extendr}\hlstd{()} \hlcom{# Init}
+\hlstd{rextendr}\hlopt{::}\hlkwd{document}\hlstd{()} \hlcom{# Update}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+The \href{https://rstudio.github.io/cheatsheets/package-development.pdf}{devtools cheat sheet} is an excellent summary of how to create and publish a package to GitHub. From here on, everything should be smooth sailing.
+
+I used the commands above to initialize my own package. Initially, it did not immediately work, but after running many commands in the devtools cheat sheet and restarting my R sessions, the following commands worked:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{load_all}\hlstd{()}
+\hlkwd{check}\hlstd{()}
+\hlstd{rextendr}\hlopt{::}\hlkwd{document}\hlstd{()} \hlcom{# Update}
+\hlcom{# Push to GitHub}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+I have published my package on GitHub. Take a look at it \href{https://github.com/S3r4f1n/rpackageUsingRust}{here}. You can install the package directly from GitHub with:
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlcom{# devtools::install_github(}
+\hlcom{#    "S3r4f1n/rpackageUsingRust")}
+\hlkwd{suppressMessages}\hlstd{(}\hlkwd{library}\hlstd{(}
+    \hlstd{rpackageUsingRust))}
+\hlkwd{greeting_n_times}\hlstd{(}\hlnum{2}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## [1] "Hello world!\nHello world!\n"
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+\section*{Conclusion}
+Building an R package is not trivial, but the tooling (devtools) is quite easy to use and well documented. With the `extendr` crate and `rextendr` package, the interoperability between Rust and R is well supported, enabling the use of Rust as a backend for R packages. If you want to create your own R package using Rust, check the dedicated articles on \href{https://extendr.github.io/rextendr/articles/package.html}{extendr} and \href{https://rstudio.github.io/cheatsheets/html/package-development.html}{devtools}.
+\end{document}

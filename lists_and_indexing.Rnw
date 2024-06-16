@@ -1,0 +1,57 @@
+%----------------------------------------------------------------------------------------
+% Title
+%----------------------------------------------------------------------------------------
+\twocolumn[{%
+\centering
+\vspace*{-.6cm}
+\LARGE \section{Slicing and Names}
+\vspace*{.2cm}
+}]
+\label{sec:lists}
+%----------------------------------------------------------------------------------------
+% Content
+%----------------------------------------------------------------------------------------
+Some of the most commonly used data structures are dictionaries and lists, but R doesn't have a dictionary type. Furthermore, lists in R behave peculiarly: Why does calling `some\_list[1]` return the first element wrapped in a list, while `some\_vec[1]` returns just the first element?
+
+<<echo=TRUE>>=
+some_vec <- c("A","B","C")
+identical("A", some_vec[1])
+some_list <- list("A","B","C")
+identical("A", some_list[1])
+@
+
+\section*{Slicing}
+To jump straight to the answer, the `[]` brackets are used for slicing. The question might be misleading since slicing a vector also returns a slice and not an element. However, all basic types in R are vectors. In that sense, the sliced vector containing only one string is as close as we get to a single string, meaning that "A" and `some\_vec[1]` are essentially the same. This does not hold for lists.
+
+We can access the elements of a list with the `[[]]` brackets. We can also use this on vectors, but we'll receive just the same as we do by slicing.
+<<echo=TRUE>>=
+some_list <- list("A","B","C")
+identical("A", some_list[[1]])
+@
+
+Slicing is quite versatile in R. Chapter 2.7 from the \href{https://rstudio.github.io/r-manuals/r-intro/Simple-manipulations-numbers-and-vectors.html#index-vectors-selecting-and-modifying-subsets-of-a-data-set}{\textit{R-intro}} provides good insights into all possibilities of slicing. We can use it to retrieve a selected part of a vector/list or to update the selected values of a vector/list. Here are some examples in code:
+<<echo=TRUE, results="hide">>=
+vec <- c("A","B","C")
+vec[c(TRUE, FALSE, TRUE)] # "A", "C"
+vec["B" == vec] # returns "B"
+vec[-2] # returns "A", "C"
+vec[2:3] <- "X" # vec = "A", "X", "X"
+@
+
+\section*{Dictionaries}
+There is no dictionary type since every vector or list can have named entries. These names can be given on creation or later by assigning the attribute names. Names can be used to slice and access elements of vectors/lists.
+<<echo=TRUE>>=
+vec <- c(1:3) # assign later
+names(vec) <- c("A","B","C")
+c(A=1,B=2,C=3) # assign on creation
+vec["B"]
+@
+
+Lists additionally provide the `\$name` dollar syntax, which does the same as `[["name"]]`.
+<<echo=TRUE>>=
+list <- list(A=1, B=2, C=3)
+identical(list[["A"]], list$A)
+@
+
+\section*{Conclusion}
+There is no separate dictionary type since vectors and lists can be turned into dictionaries by naming them. The `\$` dollar syntax is handy to access values of named lists. Furthermore, the `[]` brackets are used to slice and not to retrieve an element. Confusion can occur when using it on vectors since, in that case, a slice of size 1 is really the same as the element itself.
