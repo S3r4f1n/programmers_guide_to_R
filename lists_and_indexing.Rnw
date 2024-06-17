@@ -4,7 +4,7 @@
 \twocolumn[{%
 \centering
 \vspace*{-.6cm}
-\LARGE \section{Slicing and Names}
+\LARGE \section{Lists and Dictionaries}
 \vspace*{.2cm}
 }]
 \label{sec:lists}
